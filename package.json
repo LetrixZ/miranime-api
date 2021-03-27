@@ -1,0 +1,31 @@
+{
+  "name": "miranime-api",
+  "version": "1.0.0",
+  "description": "miranime-api by letrix",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Letrix",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-express": "^2.22.1",
+    "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "graphql": "^15.5.0",
+    "graphql-resolvers": "^0.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.6.2",
+    "sequelize-to-json": "git+https://github.com/doublesharp/sequelize-to-json.git"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
