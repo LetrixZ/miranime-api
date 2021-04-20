@@ -10,7 +10,7 @@ const bodyParser = require('body-parser')
 
 const app = express();
 
-dotenv.config();
+// dotenv.config();
 
 app.use(bodyParser.json({limit: '50mb'}));
 

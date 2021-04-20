@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-require('dotenv').config()
+// require('dotenv').config()
 
 const init = () => {
   const { DB_HOST, DB_USER, DB_DB, DB_PASS } = process.env
