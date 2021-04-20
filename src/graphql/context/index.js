@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const { AuthenticationError } = require('apollo-server-express');
 
 const verifyToken = async (token) => {

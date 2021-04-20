@@ -2,9 +2,9 @@ const { Op } = require('sequelize')
 const Anime = require('../models/animes')
 const Sites = require('../models/sites')
 const Scrape = require('../scrape')
-const { insert: insertSite } = require('./site')
+const { getSiteName } = require('../scrape/utils')
 
-const get = async ({ id = null, idMal = null, idAl = null, update = true } = {}) => {
+const get = async ({ id = null, idMal = null, idAl = null, update = false } = {}) => {
     let where
     if (id) where = { id: id }
     else if (idMal) where = { idMal: idMal }
@@ -36,74 +36,42 @@ const search = async (query) => {
     })).map(it => it.serialize()))
 }
 
-const insertEntry = async (item) => {
-    return await Anime.create({
-        idMal: item?.idMal,
-        idAl: item?.idAl,
-        title: item?.title,
-        type: item?.type,
-        episodes: item?.episodes,
-        state: item?.state,
-        synopsis: item?.synopsis,
-        synonyms: item?.synonyms?.join('|'),
-        genres: item?.genres?.join('|'),
-        poster: item?.poster,
-        banner: item?.banner,
-        year: item?.year,
-        season: item?.season,
-    })
-}
-
-const updateEntry = async (item, entry) => {
-    // console.log(`Updated ${entry.idMal}: ${entry.title}`)
-    await entry.update({
-        idMal: item?.idMal,
-        idAl: item?.idAl,
-        title: item?.title,
-        type: item?.type,
-        episodes: item?.episodes,
-        state: item?.state,
-        synopsis: item?.synopsis,
-        synonyms: item?.synonyms?.join('|'),
-        genres: item?.genres?.join('|'),
-        poster: item?.poster,
-        banner: item?.banner,
-        year: item?.year,
-        season: item?.season,
-    })
-    if (item.sites) {
-        await insertSite(item.sites.map(it => {
-            return {
-                name: it.name,
-                anime: item.idMal,
-                id: it.id
-            }
-        }))
-    }
-    return entry
-}
+const fs = require('fs')
 
 const insert = async (list) => {
-    return await Promise.all(
+    const non = []
+    const sites = await Promise.all(
         list.map(async (item) => {
             try {
-                const entry = await Anime.findOne({ where: { idMal: item.idMal } })
-                if (entry) return await updateEntry(item, entry)
-                else return await insertEntry(item)
+                const anime = await Anime.findOne({ where: { idMal: item.anime } })
+                if (anime != null) {
+                    return await Sites.create(
+                        {
+                            name: item.name,
+                            animeId: anime.id,
+                            link: item.id,
+                            uid: `${getSiteName(item.name)}-${item.id}`
+                        }
+                    )
+                } else {
+                    console.log(item)
+                    non.push(item)
+                    return null
+                }
             } catch (e) {
-                console.log(e)
                 return null
             }
         }).filter(it => it != null)
     )
+    // fs.writeFileSync('non.json', JSON.stringify(non))
+    return list
 }
 
 const update = async (list) => {
     return await Promise.all(
         list.map(async (item) => {
             where = null
-            if (item.id) where = { id: item.id }
-            else if (item.idMal) where = { idMal: item.idMal }
+            if (item.idMal) where = { idMal: item.idMal }
             else if (item.idAl) where = { idAl: item.idAl }
             const entry = await Anime.findOne({ where: where, include: Sites })
             if (entry) {

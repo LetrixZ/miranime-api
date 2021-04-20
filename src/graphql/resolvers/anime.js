@@ -1,7 +1,8 @@
-const Anime = require('../../models/animes');
-const Sites = require('../../models/sites');
+const Anime = require('../../models/animes')
+const Sites = require('../../models/sites')
 const Service = require('../../services/anime')
-const { AuthenticationError } = require('apollo-server-express');
+const { AuthenticationError } = require('apollo-server-express')
+const { getHome } = require('../../scrape')
 
 module.exports = {
   Query: {
@@ -12,16 +13,26 @@ module.exports = {
       return Service.search(args.query)
     },
     async allAnime() {
-      return (await Anime.findAll({ include: Sites })).map((it) => it.serialize());
+      return (await Anime.findAll({ include: Sites })).map((it) => it.serialize())
     },
+    async home(_root, args) {
+      return await getHome(args.site)
+    }
   },
   Mutation: {
     async update(_root, args, { auth = null }) {
       if (!auth) {
-        throw new AuthenticationError('Invalid token');
+        throw new AuthenticationError('Invalid token')
       } else {
         return Service.update(args.params)
       }
     },
+    async insertBatch(_root, args, { auth = null }) {
+      if (!auth) {
+        throw new AuthenticationError('Invalid token')
+      } else {
+        return Service.insert(args.params)
+      }
+    }
   }
 }

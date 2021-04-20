@@ -1,11 +1,9 @@
-const server = require('./app');
-const { sequelize } = require('./models/conn');
-// const Animes = require('./models/animes');
-// const Sites = require('./models/sites');
+const server = require('./app')
+const { sequelize } = require('./models/conn')
 
-const port = process.env.PORT || 4000;
-sequelize.sync().then(() => {
+const port = process.env.PORT || 4000
+sequelize.sync({ force: false }).then(() => {
   server.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`);
-  });
-});
+    console.log(`Listening on http://localhost:${port}`)
+  })
+})
